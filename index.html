@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stop. Check. Don't Forward. — Anti-Disinformation Toolkit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green:   #1a5c38;
+    --green-light: #2d8653;
+    --gold:    #f5c518;
+    --gold-light: #fdd94e;
+    --white:   #ffffff;
+    --off-white: #f9f6ef;
+    --dark:    #111111;
+    --gray:    #6b7280;
+    --gray-light: #e8e8e8;
+
+    --red:     #d93025;
+    --red-bg:  #fff1f0;
+    --yellow:  #e6a817;
+    --yellow-bg: #fffbeb;
+    --orange:  #e05c00;
+    --orange-bg: #fff4ee;
+    --purple:  #6d3fa6;
+    --purple-bg: #f5f0ff;
+
+    --wa-green: #25d366;
+    --wa-dark:  #111b21;
+    --wa-header:#202c33;
+    --wa-bubble-out: #d9fdd3;
+    --wa-bubble-in:  #ffffff;
+    --wa-bg:    #efeae2;
+
+    --radius:  16px;
+    --shadow:  0 4px 24px rgba(0,0,0,0.10);
+    --shadow-lg: 0 8px 40px rgba(0,0,0,0.16);
+
+    --max-w: 680px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--off-white);
+    color: var(--dark);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ===== PROGRESS BAR ===== */
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 4px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--wa-green), var(--gold));
+    z-index: 1000;
+    transition: width 0.1s linear;
+    border-radius: 0 2px 2px 0;
+  }
+
+  /* ===== LAYOUT HELPERS ===== */
+  .container {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  section { padding: 72px 0; }
+
+  .section-label {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--green);
+    background: rgba(26,92,56,0.08);
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+
+  h1, h2, h3 { line-height: 1.2; }
+
+  h2 {
+    font-size: clamp(26px, 5vw, 36px);
+    font-weight: 800;
+    margin-bottom: 16px;
+  }
+
+  p { color: #374151; font-size: 16px; }
+
+  /* ===== SCROLL ANIMATIONS ===== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ===========================
+     SECTION 1 — HOOK
+  =========================== */
+  #hook {
+    background: var(--green);
+    padding-top: 80px;
+    padding-bottom: 64px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #hook::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 320px; height: 320px;
+    background: rgba(245,197,24,0.12);
+    border-radius: 50%;
+  }
+  #hook::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -60px;
+    width: 220px; height: 220px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+  }
+
+  .hook-eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  #hook h1 {
+    font-size: clamp(32px, 8vw, 52px);
+    font-weight: 800;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+
+  #hook h1 span {
+    color: var(--gold);
+    display: block;
+  }
+
+  .hook-sub {
+    color: rgba(255,255,255,0.75);
+    font-size: 15px;
+    margin-bottom: 40px;
+  }
+
+  /* WhatsApp Mock */
+  .wa-phone {
+    background: var(--wa-bg);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg), 0 0 0 8px rgba(255,255,255,0.06);
+    max-width: 380px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .wa-header {
+    background: var(--wa-header);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .wa-back { color: rgba(255,255,255,0.6); font-size: 18px; cursor: default; }
+
+  .wa-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #25d366, #128c7e);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .wa-group-info { flex: 1; min-width: 0; }
+  .wa-group-name {
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .wa-group-count {
+    color: rgba(255,255,255,0.5);
+    font-size: 12px;
+  }
+
+  .wa-icons { display: flex; gap: 16px; color: rgba(255,255,255,0.6); font-size: 16px; }
+
+  .wa-body {
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 320px;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b9b9b9' fill-opacity='0.07'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .wa-date-divider {
+    text-align: center;
+    margin: 8px 0;
+  }
+  .wa-date-divider span {
+    background: rgba(11,20,26,0.12);
+    color: #111b21;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+
+  .wa-msg {
+    display: flex;
+    flex-direction: column;
+    max-width: 80%;
+    position: relative;
+  }
+
+  .wa-msg.incoming { align-self: flex-start; }
+  .wa-msg.outgoing { align-self: flex-end; }
+
+  .wa-sender-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #53bdeb;
+    margin-bottom: 2px;
+    padding-left: 12px;
+  }
+
+  .wa-bubble {
+    padding: 8px 12px 20px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.12);
+    word-break: break-word;
+  }
+
+  .wa-msg.incoming .wa-bubble {
+    background: var(--wa-bubble-in);
+    border-top-left-radius: 0;
+  }
+  .wa-msg.outgoing .wa-bubble {
+    background: var(--wa-bubble-out);
+    border-top-right-radius: 0;
+  }
+
+  .wa-forwarded {
+    font-size: 11px;
+    color: #8696a0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 4px;
+    font-style: italic;
+  }
+  .wa-forwarded svg { width: 12px; height: 12px; fill: #8696a0; }
+
+  .wa-time {
+    position: absolute;
+    bottom: 4px; right: 10px;
+    font-size: 10px;
+    color: #8696a0;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .wa-msg.outgoing .wa-time svg { color: #53bdeb; }
+
+  .wa-ticks { display: flex; align-items: center; }
+  .wa-ticks svg { width: 16px; height: 12px; fill: #53bdeb; }
+
+  /* Typing indicator */
+  .wa-typing {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    margin-top: 4px;
+  }
+  .wa-typing-name { font-size: 12px; color: var(--wa-green); font-weight: 600; }
+  .typing-dots { display: flex; gap: 4px; }
+  .typing-dots span {
+    width: 6px; height: 6px;
+    background: #8696a0;
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-5px); }
+  }
+
+  /* Forward button overlay */
+  .wa-input-area {
+    background: var(--wa-header);
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .wa-forward-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: rgba(37,211,102,0.08);
+    border-top: 1px solid rgba(37,211,102,0.2);
+  }
+  .wa-forward-label {
+    font-size: 12px;
+    color: #374151;
+    font-weight: 500;
+  }
+
+  .wa-fwd-btn {
+    background: var(--wa-green);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: default;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: inherit;
+    position: relative;
+    animation: pulse-btn 2s infinite;
+  }
+  @keyframes pulse-btn {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(37,211,102,0.5); }
+    50% { box-shadow: 0 0 0 8px rgba(37,211,102,0); }
+  }
+
+  .cursor-blink {
+    display: inline-block;
+    width: 2px; height: 14px;
+    background: white;
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  /* Hook bottom text */
+  .hook-bottom {
+    margin-top: 40px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .hook-emoji {
+    font-size: 32px;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .hook-bottom p {
+    color: rgba(255,255,255,0.9);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .hook-bottom strong { color: var(--gold); }
+
+  /* ===========================
+     SECTION 2 — THE PROBLEM
+  =========================== */
+  #problem {
+    background: var(--white);
+  }
+
+  .problem-intro {
+    margin-bottom: 40px;
+  }
+
+  .problem-intro p {
+    font-size: 17px;
+    line-height: 1.7;
+    color: #374151;
+  }
+
+  .problem-intro p + p { margin-top: 16px; }
+
+  .problem-intro strong { color: var(--green); }
+
+  /* Brain metaphor */
+  .brain-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 40px;
+  }
+
+  .brain-card {
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .brain-card.emotional {
+    background: #fff1f0;
+    border: 2px solid #fca5a5;
+  }
+  .brain-card.informed {
+    background: #f0fdf4;
+    border: 2px solid #86efac;
+  }
+
+  .brain-icon { font-size: 36px; margin-bottom: 12px; display: block; }
+  .brain-card h3 { font-size: 16px; font-weight: 800; margin-bottom: 8px; }
+  .brain-card.emotional h3 { color: var(--red); }
+  .brain-card.informed h3 { color: var(--green); }
+  .brain-card p { font-size: 13px; line-height: 1.5; color: #4b5563; }
+
+  .brain-vs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-column: 1 / -1;
+    order: -1;
+    margin-bottom: -8px;
+  }
+
+  .vs-badge {
+    background: var(--dark);
+    color: white;
+    font-size: 13px;
+    font-weight: 800;
+    padding: 6px 14px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+  }
+
+  .problem-stat {
+    margin-top: 40px;
+    background: linear-gradient(135deg, var(--green), var(--green-light));
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    color: white;
+    text-align: center;
+  }
+  .problem-stat .stat-num {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .problem-stat .stat-label {
+    font-size: 15px;
+    color: rgba(255,255,255,0.85);
+    margin-top: 8px;
+  }
+
+  /* ===========================
+     SECTION 3 — TACTICS
+  =========================== */
+  #tactics {
+    background: var(--off-white);
+  }
+
+  #tactics h2 { text-align: center; }
+  #tactics > .container > p {
+    text-align: center;
+    margin-bottom: 48px;
+    color: #6b7280;
+  }
+
+  .tactics-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .tactic-card {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: default;
+  }
+
+  .tactic-card:hover, .tactic-card:focus-within {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .tactic-header {
+    padding: 20px 24px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .tactic-icon {
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.3);
+  }
+
+  .tactic-name { font-size: 18px; font-weight: 800; }
+  .tactic-number { font-size: 12px; font-weight: 700; opacity: 0.6; letter-spacing: 1px; text-transform: uppercase; }
+
+  /* Tactic colors */
+  .tactic-card.fear .tactic-header { background: var(--red); color: white; }
+  .tactic-card.hidden .tactic-header { background: var(--yellow); color: #1a1a1a; }
+  .tactic-card.emotional .tactic-header { background: var(--orange); color: white; }
+  .tactic-card.guilt .tactic-header { background: var(--purple); color: white; }
+
+  .tactic-body {
+    background: white;
+    padding: 20px 24px;
+  }
+
+  .tactic-example {
+    background: #f3f4f6;
+    border-left: 3px solid;
+    border-radius: 0 8px 8px 0;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    font-style: italic;
+    color: #374151;
+    line-height: 1.5;
+  }
+  .tactic-card.fear .tactic-example { border-color: var(--red); background: var(--red-bg); }
+  .tactic-card.hidden .tactic-example { border-color: var(--yellow); background: var(--yellow-bg); }
+  .tactic-card.emotional .tactic-example { border-color: var(--orange); background: var(--orange-bg); }
+  .tactic-card.guilt .tactic-example { border-color: var(--purple); background: var(--purple-bg); }
+
+  .tactic-psych {
+    margin-bottom: 16px;
+  }
+  .tactic-psych-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray);
+    margin-bottom: 4px;
+  }
+  .tactic-psych p {
+    font-size: 14px;
+    color: #374151;
+    line-height: 1.5;
+  }
+
+  .tactic-move {
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .tactic-card.fear .tactic-move { background: var(--red-bg); }
+  .tactic-card.hidden .tactic-move { background: var(--yellow-bg); }
+  .tactic-card.emotional .tactic-move { background: var(--orange-bg); }
+  .tactic-card.guilt .tactic-move { background: var(--purple-bg); }
+
+  .tactic-move-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+  }
+  .tactic-card.fear .tactic-move-label { color: var(--red); }
+  .tactic-card.hidden .tactic-move-label { color: #92660a; }
+  .tactic-card.emotional .tactic-move-label { color: var(--orange); }
+  .tactic-card.guilt .tactic-move-label { color: var(--purple); }
+
+  .tactic-move-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+  .tactic-move p { font-size: 14px; color: #374151; line-height: 1.5; }
+
+  /* ===========================
+     SECTION 4 — 5-SECOND RULE
+  =========================== */
+  #rule {
+    background: var(--white);
+  }
+
+  .rule-steps {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .rule-step {
+    display: flex;
+    gap: 20px;
+    position: relative;
+    padding-bottom: 32px;
+  }
+
+  .rule-step:last-child { padding-bottom: 0; }
+
+  .rule-step-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .rule-step-num {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    font-weight: 900;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .rule-step:nth-child(1) .rule-step-num { background: #fee2e2; color: var(--red); }
+  .rule-step:nth-child(2) .rule-step-num { background: #fef3c7; color: #92660a; }
+  .rule-step:nth-child(3) .rule-step-num { background: #dcfce7; color: var(--green); }
+
+  .rule-connector {
+    width: 2px;
+    flex: 1;
+    background: var(--gray-light);
+    margin-top: 4px;
+  }
+
+  .rule-step-content { padding-top: 10px; }
+  .rule-step-content h3 { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+  .rule-step-content p { font-size: 15px; color: #4b5563; line-height: 1.6; }
+
+  .rule-step-icon { font-size: 28px; margin-bottom: 8px; }
+
+  /* Callout box */
+  .callout-box {
+    margin-top: 40px;
+    background: #fffbeb;
+    border: 2px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .callout-box::before {
+    content: '😅';
+    position: absolute;
+    top: -10px; right: 16px;
+    font-size: 40px;
+    opacity: 0.3;
+  }
+  .callout-q {
+    font-size: 15px;
+    font-weight: 700;
+    color: #92660a;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .callout-q::before { content: '💬'; font-size: 18px; flex-shrink: 0; }
+  .callout-a {
+    font-size: 14px;
+    color: #374151;
+    line-height: 1.6;
+    padding-left: 26px;
+  }
+
+  /* Big rule */
+  .big-rule {
+    margin-top: 48px;
+    text-align: center;
+    padding: 32px 24px;
+    background: var(--green);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .big-rule::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: rgba(245,197,24,0.15);
+    border-radius: 50%;
+  }
+  .big-rule p {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 12px;
+  }
+  .big-rule h3 {
+    font-size: clamp(22px, 5vw, 32px);
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1.2;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===========================
+     SECTION 5 — CLOSING
+  =========================== */
+  #closing {
+    background: linear-gradient(160deg, var(--green) 0%, #0f3d24 100%);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  #closing::before {
+    content: '';
+    position: absolute;
+    top: -100px; left: 50%;
+    transform: translateX(-50%);
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(245,197,24,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .closing-hero {
+    position: relative;
+    z-index: 1;
+  }
+
+  .closing-icon { font-size: 56px; margin-bottom: 24px; display: block; }
+
+  #closing h2 {
+    color: var(--white);
+    font-size: clamp(28px, 6vw, 42px);
+    margin-bottom: 16px;
+  }
+
+  #closing h2 span { color: var(--gold); }
+
+  .closing-text {
+    color: rgba(255,255,255,0.8);
+    font-size: 16px;
+    max-width: 480px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+  }
+
+  /* Network visual */
+  .network-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    margin: 32px 0;
+    flex-wrap: wrap;
+  }
+
+  .network-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .node-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    border: 2px solid rgba(255,255,255,0.2);
+  }
+  .node-avatar.you {
+    width: 56px; height: 56px;
+    font-size: 24px;
+    border-color: var(--gold);
+    background: rgba(245,197,24,0.15);
+    box-shadow: 0 0 0 4px rgba(245,197,24,0.2);
+  }
+  .node-label {
+    font-size: 10px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .network-line {
+    width: 24px; height: 2px;
+    background: rgba(255,255,255,0.15);
+    margin-top: -20px;
+  }
+
+  .network-stat {
+    margin-top: 8px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .network-stat strong { color: var(--gold); }
+
+  /* CTA Button */
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--gold);
+    color: var(--dark);
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 800;
+    padding: 18px 36px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    box-shadow: 0 4px 20px rgba(245,197,24,0.4);
+    text-decoration: none;
+    margin-bottom: 16px;
+  }
+  .cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(245,197,24,0.5);
+    background: var(--gold-light);
+  }
+  .cta-btn:active { transform: translateY(0); }
+  .cta-btn svg { width: 20px; height: 20px; }
+
+  .cta-copy-msg {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 8px;
+    min-height: 20px;
+    transition: opacity 0.3s ease;
+    display: block;
+  }
+
+  /* Prebunking note */
+  .prebunking-note {
+    margin-top: 56px;
+    padding-top: 40px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .prebunking-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .prebunking-note p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.7;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* Footer */
+  footer {
+    background: #0a2016;
+    padding: 24px 20px;
+    text-align: center;
+  }
+  footer p {
+    font-size: 12px;
+    color: rgba(255,255,255,0.3);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 420px) {
+    .brain-split { grid-template-columns: 1fr; }
+    .brain-vs { order: 0; }
+    .tactic-header { padding: 16px 18px 14px; }
+    .tactic-body { padding: 16px 18px; }
+    .wa-phone { border-radius: 18px; }
+    .network-line { width: 14px; }
+    .node-avatar { width: 36px; height: 36px; font-size: 16px; }
+    .node-avatar.you { width: 46px; height: 46px; font-size: 20px; }
+  }
+
+  @media (min-width: 600px) {
+    .tactics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .tactic-card { display: flex; flex-direction: column; }
+    .tactic-body { flex: 1; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div id="progress-bar" role="progressbar" aria-label="Reading progress"></div>
+
+<!-- ==================== SECTION 1: HOOK ==================== -->
+<section id="hook">
+  <div class="container">
+    <span class="hook-eyebrow reveal">Your free anti-disinformation toolkit</span>
+    <h1 class="reveal reveal-delay-1">Stop. Check.<span>Don't Forward.</span></h1>
+    <p class="hook-sub reveal reveal-delay-2">Before you scroll past — does this scene look familiar?</p>
+
+    <!-- WhatsApp Mock -->
+    <div class="wa-phone reveal reveal-delay-2">
+      <div class="wa-header">
+        <span class="wa-back">‹</span>
+        <div class="wa-avatar">🇳🇬</div>
+        <div class="wa-group-info">
+          <div class="wa-group-name">Nigeria Familia 🇳🇬🔥</div>
+          <div class="wa-group-count">23 participants</div>
+        </div>
+        <div class="wa-icons">
+          <span>📞</span>
+          <span>⋮</span>
+        </div>
+      </div>
+
+      <div class="wa-body">
+        <div class="wa-date-divider"><span>Today</span></div>
+
+        <!-- Uncle Emeka's message -->
+        <div class="wa-msg incoming">
+          <div class="wa-sender-name">Uncle Emeka</div>
+          <div class="wa-bubble">
+            <div class="wa-forwarded">
+              <svg viewBox="0 0 24 24"><path d="M12 4l8 8-8 8v-5H4V9h8V4z"/></svg>
+              Forwarded many times
+            </div>
+            🚨 <strong>URGENT — READ NOW BEFORE THEY DELETE THIS</strong> 🚨<br><br>
+            The government has put microchips inside every new ₦1000 note. They are tracking all of us. Scientists have CONFIRMED this. Banks are involved!<br><br>
+            Please share with everyone you know before this message disappears. God will bless you for spreading this truth 🙏🙏🙏
+            <div class="wa-time">09:47 <span class="wa-ticks"><svg viewBox="0 0 16 12"><path d="M1 6l4 4L15 1" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M5 6l4 4L15 1" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></span></div>
+          </div>
+        </div>
+
+        <!-- Aunty Ngozi's reply -->
+        <div class="wa-msg incoming" style="margin-top:4px">
+          <div class="wa-sender-name" style="color:#ff6b6b">Aunty Ngozi 😱</div>
+          <div class="wa-bubble">
+            Chai!! This is serious o!! I'm checking my wallet right now 😭 Already forwarding to my prayer group and my market women association. Everyone must know!!
+            <div class="wa-time">09:48</div>
+          </div>
+        </div>
+
+        <!-- Typing indicator -->
+        <div class="wa-typing">
+          <span class="wa-typing-name">Brother Tunde</span>&nbsp;
+          <div class="typing-dots"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+
+      <!-- Forward row with cursor -->
+      <div class="wa-forward-row">
+        <span class="wa-forward-label">👆 You — hovering over Forward…</span>
+        <button class="wa-fwd-btn" tabindex="-1" aria-hidden="true">
+          Forward
+          <span class="cursor-blink"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Bottom message -->
+    <div class="hook-bottom reveal reveal-delay-3">
+      <span class="hook-emoji">🛡️</span>
+      <p>This toolkit gives you <strong>one small superpower</strong> — the ability to pause for 5 seconds before you forward. That pause protects everyone in your network. Let's build it together.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECTION 2: THE PROBLEM ==================== -->
+<section id="problem">
+  <div class="container">
+    <span class="section-label reveal">The Real Issue</span>
+    <h2 class="reveal reveal-delay-1">Fake news isn't an accident.<br>It's a recipe.</h2>
+
+    <div class="problem-intro reveal reveal-delay-2">
+      <p>Nobody sits down one morning and says "let me make up something false today" — well, some people do, actually. And they're <strong>very good at it</strong>.</p>
+      <p>Disinformation is <strong>engineered</strong>. It's designed with precision to hit specific emotional triggers — fear, anger, religious duty, the thrill of knowing a secret nobody else knows. By the time you read it, it has already been tested to make you react before you think.</p>
+      <p>That's not a weakness in you. That's how the human brain works. But understanding it is the first step to beating it.</p>
+    </div>
+
+    <div class="brain-split reveal reveal-delay-3">
+      <div class="brain-card emotional">
+        <span class="brain-icon">😤</span>
+        <h3>Emotional Brain</h3>
+        <p>Fast, protective, tribal. Sees danger and reacts in milliseconds. Loves stories that match what it already fears. This is the brain disinformation targets.</p>
+      </div>
+      <div class="brain-card informed">
+        <span class="brain-icon">🧠</span>
+        <h3>Thinking Brain</h3>
+        <p>Slow, curious, skeptical. Asks "wait, is this true?" Needs a second to activate — but when it does, it can catch almost anything fake.</p>
+      </div>
+    </div>
+
+    <div class="problem-stat reveal reveal-delay-4">
+      <div class="stat-num">70%</div>
+      <div class="stat-label">of people who share false information do it because they felt <em>something</em> strongly — not because they verified it. Feeling is the mechanism. Now you know.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECTION 3: TACTICS ==================== -->
+<section id="tactics">
+  <div class="container">
+    <span class="section-label reveal" style="display:block;text-align:center">Know The Playbook</span>
+    <h2 class="reveal reveal-delay-1">4 tricks they use<br>on your WhatsApp</h2>
+    <p class="reveal reveal-delay-2">Once you can name the trick, it loses its power over you. Study these cards like your life depends on it — because sometimes, for someone in your network, it does.</p>
+
+    <div class="tactics-grid">
+
+      <!-- TACTIC 1: Fear + Urgency -->
+      <div class="tactic-card fear reveal reveal-delay-1">
+        <div class="tactic-header">
+          <div class="tactic-icon">🚨</div>
+          <div>
+            <div class="tactic-number">Tactic 01</div>
+            <div class="tactic-name">Fear + Urgency</div>
+          </div>
+        </div>
+        <div class="tactic-body">
+          <div class="tactic-example">
+            "URGENT — share before midnight or your account will be blocked." / "They are coming for us, forward NOW before this is deleted!!"
+          </div>
+          <div class="tactic-psych">
+            <div class="tactic-psych-label">What's happening</div>
+            <p>Urgency disables fact-checking. If you feel you have no time, your thinking brain never activates. The deadline is always fake — real emergencies don't spread by WhatsApp forward.</p>
+          </div>
+          <div class="tactic-move">
+            <span class="tactic-move-icon">🎯</span>
+            <div>
+              <div class="tactic-move-label">Your Move</div>
+              <p>The more urgent it feels, the slower you move. Treat artificial deadlines as a red flag, not a reason to rush.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TACTIC 2: Hidden Truth -->
+      <div class="tactic-card hidden reveal reveal-delay-2">
+        <div class="tactic-header">
+          <div class="tactic-icon">🤫</div>
+          <div>
+            <div class="tactic-number">Tactic 02</div>
+            <div class="tactic-name">Hidden Truth</div>
+          </div>
+        </div>
+        <div class="tactic-body">
+          <div class="tactic-example">
+            "They don't want you to know this." / "BBC and CNN won't report it because they're paid to hide it." / "A scientist CONFIRMED this but was silenced."
+          </div>
+          <div class="tactic-psych">
+            <div class="tactic-psych-label">What's happening</div>
+            <p>Being "in the know" feels powerful. When a message claims only special people see the truth, it activates your identity as a smart, aware person — which makes you less likely to question it.</p>
+          </div>
+          <div class="tactic-move">
+            <span class="tactic-move-icon">🎯</span>
+            <div>
+              <div class="tactic-move-label">Your Move</div>
+              <p>Real secrets don't arrive via WhatsApp. If a story was "suppressed," search for it. Suppressed stories leave traces — the silence itself is the fake part.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TACTIC 3: Emotional Overload -->
+      <div class="tactic-card emotional reveal reveal-delay-3">
+        <div class="tactic-header">
+          <div class="tactic-icon">😭</div>
+          <div>
+            <div class="tactic-number">Tactic 03</div>
+            <div class="tactic-name">Emotional Overload</div>
+          </div>
+        </div>
+        <div class="tactic-body">
+          <div class="tactic-example">
+            "This little girl has no food — share so donors can find her." / "This doctor is crying because they're hiding the cure for cancer." / Graphic images of disaster with a fake location.
+          </div>
+          <div class="tactic-psych">
+            <div class="tactic-psych-label">What's happening</div>
+            <p>Strong emotions — especially sadness and outrage — shut down critical thinking. A story that makes you cry or rage feels true because it feels important. That's the exploit.</p>
+          </div>
+          <div class="tactic-move">
+            <span class="tactic-move-icon">🎯</span>
+            <div>
+              <div class="tactic-move-label">Your Move</div>
+              <p>If a post makes you feel a lot, pause for exactly 5 seconds. Strong feeling = strong reason to verify, not strong reason to share.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TACTIC 4: God + Guilt -->
+      <div class="tactic-card guilt reveal reveal-delay-4">
+        <div class="tactic-header">
+          <div class="tactic-icon">🙏</div>
+          <div>
+            <div class="tactic-number">Tactic 04</div>
+            <div class="tactic-name">God + Guilt</div>
+          </div>
+        </div>
+        <div class="tactic-body">
+          <div class="tactic-example">
+            "Share if you love Jesus." / "Only 3% of people will be brave enough to post this." / "If you scroll past without sharing, you don't care about your people."
+          </div>
+          <div class="tactic-psych">
+            <div class="tactic-psych-label">What's happening</div>
+            <p>This hijacks your identity and faith. Refusing to forward feels like a moral failure. But sharing a lie in God's name is the actual moral failure — they flipped it on you.</p>
+          </div>
+          <div class="tactic-move">
+            <span class="tactic-move-icon">🎯</span>
+            <div>
+              <div class="tactic-move-label">Your Move</div>
+              <p>God does not need WhatsApp forwards. True faith is verified faith. Check first, share second — or not at all.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECTION 4: THE 5-SECOND RULE ==================== -->
+<section id="rule">
+  <div class="container">
+    <span class="section-label reveal">Your Toolkit</span>
+    <h2 class="reveal reveal-delay-1">The 5-Second Rule</h2>
+    <p class="reveal reveal-delay-2" style="font-size:17px;color:#374151;margin-bottom:8px">Before you tap Forward, run this 3-step mental check. It takes 5 seconds. It could save someone from panic, a hospital visit, or a scam.</p>
+
+    <div class="rule-steps">
+
+      <!-- Step 1 -->
+      <div class="rule-step reveal reveal-delay-1">
+        <div class="rule-step-left">
+          <div class="rule-step-num">❤️</div>
+          <div class="rule-connector"></div>
+        </div>
+        <div class="rule-step-content">
+          <h3>Check your chest</h3>
+          <p>Are you feeling panic, outrage, or shock right now? That's a red flag — not a green light. Disinformation is designed to feel urgent and alarming. If your heart is racing, your thinking brain needs more time, not less.</p>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="rule-step reveal reveal-delay-2">
+        <div class="rule-step-left">
+          <div class="rule-step-num">🔍</div>
+          <div class="rule-connector"></div>
+        </div>
+        <div class="rule-step-content">
+          <h3>Check the source</h3>
+          <p>Is this story on Channels TV, Punch, BBC Pidgin, or Premium Times? Take 10 seconds to Google the headline. If it's real and important, credible outlets will be reporting it. No results? That's your answer.</p>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="rule-step reveal reveal-delay-3">
+        <div class="rule-step-left">
+          <div class="rule-step-num">🧘</div>
+        </div>
+        <div class="rule-step-content">
+          <h3>Trust your gut — doubt is enough</h3>
+          <p>You don't need to prove something is false to stop forwarding it. If something feels off — the writing style, the claim, the timing — that doubt is enough. You are not obligated to spread something you're not sure about.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Callout box -->
+    <div class="callout-box reveal reveal-delay-2">
+      <div class="callout-q">"But what if it's TRUE and I didn't share it? What if I could have helped someone?"</div>
+      <div class="callout-a">
+        Here's the thing — if it's actually true, it'll still be true in 10 minutes after you verify it. Real important news doesn't expire the moment you close WhatsApp. But a lie you spread is already out there before you finish that thought. You're not the last line of defence — you're just one person. And that's enough.
+      </div>
+    </div>
+
+    <!-- Big rule -->
+    <div class="big-rule reveal reveal-delay-3">
+      <p>The golden rule</p>
+      <h3>When in doubt — don't forward.</h3>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECTION 5: CLOSING ==================== -->
+<section id="closing">
+  <div class="container closing-hero">
+    <span class="closing-icon reveal">🌍</span>
+    <h2 class="reveal reveal-delay-1"><span>You</span> are the network.</h2>
+    <p class="closing-text reveal reveal-delay-2">Every message you stop reaches zero more people. Every false claim you refuse to forward dies in your hands. One pause can protect hundreds in your network — your family, your friends, your community.</p>
+
+    <!-- Network visual -->
+    <div class="network-visual reveal reveal-delay-2">
+      <div class="network-node">
+        <div class="node-avatar">👩🏾</div>
+        <div class="node-label">Mama</div>
+      </div>
+      <div class="network-line"></div>
+      <div class="network-node">
+        <div class="node-avatar">👴🏾</div>
+        <div class="node-label">Uncle</div>
+      </div>
+      <div class="network-line"></div>
+      <div class="network-node">
+        <div class="node-avatar you">🛡️</div>
+        <div class="node-label" style="color:var(--gold);font-size:11px;font-weight:700">YOU</div>
+      </div>
+      <div class="network-line"></div>
+      <div class="network-node">
+        <div class="node-avatar">👩🏽</div>
+        <div class="node-label">Colleague</div>
+      </div>
+      <div class="network-line"></div>
+      <div class="network-node">
+        <div class="node-avatar">👦🏾</div>
+        <div class="node-label">Cousin</div>
+      </div>
+    </div>
+    <p class="network-stat reveal reveal-delay-3">The average Nigerian WhatsApp user is connected to <strong>200+ people</strong> across multiple groups. Your one pause matters more than you think.</p>
+
+    <!-- CTA -->
+    <div class="reveal reveal-delay-3" style="margin-top:48px">
+      <p style="color:rgba(255,255,255,0.6);font-size:14px;margin-bottom:16px">Know someone who needs this?</p>
+      <button class="cta-btn" onclick="sharesite()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Share This Site
+      </button>
+      <span id="copy-msg" class="cta-copy-msg" aria-live="polite"></span>
+    </div>
+
+    <!-- Prebunking note -->
+    <div class="prebunking-note reveal reveal-delay-4">
+      <span class="prebunking-label">About this toolkit</span>
+      <p>This site uses <strong style="color:rgba(255,255,255,0.8)">prebunking</strong> — a research-backed method that teaches people how manipulation works <em>before</em> they encounter it. Unlike fact-checking (which corrects after the fact), prebunking builds lasting resistance by exposing the techniques used in disinformation. Studies show it reduces susceptibility by up to 70% — even when the specific claim is new.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Made for everyday Nigerians who want to protect their communities. Share freely. No copyright.</p>
+</footer>
+
+<script>
+  // ===== PROGRESS BAR =====
+  const progressBar = document.getElementById('progress-bar');
+  function updateProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = pct + '%';
+    progressBar.setAttribute('aria-valuenow', Math.round(pct));
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  // ===== SCROLL REVEAL =====
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  revealEls.forEach(el => revealObserver.observe(el));
+
+  // ===== SHARE BUTTON =====
+  async function sharesite() {
+    const shareData = {
+      title: 'Stop. Check. Don\'t Forward.',
+      text: 'An anti-disinformation toolkit for WhatsApp and Facebook users in Nigeria. Takes 2 minutes to read, lasts a lifetime.',
+      url: window.location.href
+    };
+
+    const copyMsg = document.getElementById('copy-msg');
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          fallbackCopy(shareData.url, copyMsg);
+        }
+      }
+    } else {
+      fallbackCopy(shareData.url, copyMsg);
+    }
+  }
+
+  function fallbackCopy(url, msgEl) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(() => {
+        showMsg(msgEl, '✓ Link copied! Paste it anywhere.');
+      }).catch(() => {
+        showMsg(msgEl, 'Copy this link: ' + url);
+      });
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = url;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showMsg(msgEl, '✓ Link copied! Paste it anywhere.');
+      } catch {
+        showMsg(msgEl, 'Copy this link: ' + url);
+      }
+      document.body.removeChild(ta);
+    }
+  }
+
+  function showMsg(el, text) {
+    el.textContent = text;
+    el.style.opacity = '1';
+    setTimeout(() => { el.style.opacity = '0'; }, 3500);
+  }
+</script>
+</body>
+</html>
